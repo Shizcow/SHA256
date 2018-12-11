@@ -1,19 +1,6 @@
 #include <string.h>
 #include <stdint.h>
-#include <stdio.h>
-#include <iostream>
-#include <iostream>
-#include <iomanip>
-#include <sstream>
-#include <string>
-#include <cassert>
-#include <openssl/sha.h>
-
-using namespace std;
-
-
-#define TEST 1
-
+#include <stdlib.h>
 
 #define ROTR(x, n) (((x) >> (n)) | ((x) << (32 - (n))))
 #define CH(x, y, z) (((x) & (y)) ^ ((~(x)) & (z)))
@@ -113,59 +100,10 @@ void sha256(uint32_t *digest, const char *msg_proto, size_t msg_length_bytes){
   free(msg);
 }
 
-inline void sha256(uint32_t *rop, const char *msg){
-  sha256(rop, msg, strlen(msg));
-}
+#define sha256_inline(digest, msg_proto) sha256(digest, msg_proto, strlen(msg_proto))
 
-void test(){
-  size_t rands = rand()%10;
-  char *msg_proto = (char*)malloc(sizeof(char)*rands+1);
-  for(size_t i=0; i<rands; ++i)
-    msg_proto[i] = /*rand()%255+1*/'a'; // No null chars
-  msg_proto[rands] = 0;
-  uint32_t digest[8];
-  sha256(digest, msg_proto);
-
-  
-#if (TEST==1)
-  unsigned char hash[SHA256_DIGEST_LENGTH];
-  SHA256_CTX sha256;
-  SHA256_Init(&sha256);
-  SHA256_Update(&sha256, msg_proto, rands);
-  SHA256_Final(hash, &sha256);
-  std::string xvcr;
-  for(int i = 0; i < SHA256_DIGEST_LENGTH; i++){
-    if((int)hash[i]<=0xf)
-      xvcr+='0';
-    char buf[4];
-    sprintf(buf, "%x ", (int)hash[i]);
-    xvcr+=buf;
-  }
-
-  const unsigned char *print = (unsigned char*)&digest[0];
-  std::string xvdr;
-  for(int i=0; i<32; ++i){
-    if((int)print[i]<=0xf)
-      xvdr+='0';
-    char buf[4];
-    sprintf(buf, "%x ", (int)print[i]);
-    xvdr+=buf;
-  }
-  if(xvdr!=xvcr){
-    std::cout << msg_proto << std::endl;
-    std::cout << "mine: " << xvdr << "\n";
-    std::cout << "ossl: " << xvcr << "\n";
-    assert(xvdr==xvcr);
-  }
-#endif
-  free(msg_proto);
-}
-
-
-int main(){
-  srand(time(NULL));
-
-  for(int i=0; i<1000000; ++i)
-    test();
-  return 0;
-}
+#define CAT(A, B) CAT2(A, B)
+#define CAT2(A, B) A ## B
+#define COUNT_PARMS2(_1, _2, _3, _, ...) _
+#define COUNT_PARMS(...) COUNT_PARMS2(__VA_ARGS__, , _inline, 1)
+#define sha256(...) CAT(sha256, COUNT_PARMS(__VA_ARGS__))(__VA_ARGS__)
