@@ -5,5 +5,6 @@ test:
 	./a.out
 
 clean:
-	rm *~
-	rm a.out
+	rm -f *~
+	rm -f a.out
+	rm -f \#*

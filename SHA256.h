@@ -1,6 +1,13 @@
+#ifndef SHIZC_SHA
+#define SHIZC_SHA
+
 #include <string.h>
 #include <stdint.h>
 #include <stdlib.h>
+
+#ifndef SHA256_DIGEST_LENGTH
+#define SHA256_DIGEST_LENGTH 32
+#endif
 
 #define ROTR(x, n) (((x) >> (n)) | ((x) << (32 - (n))))
 #define CH(x, y, z) (((x) & (y)) ^ ((~(x)) & (z)))
@@ -22,12 +29,17 @@ const uint32_t k[64] = {0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c2
 			0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a,
 			0x5b9cca4f, 0x682e6ff3, 0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208,
 			0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2};
-const uint32_t reference_digest[8] = {0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a,
-				      0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19};
 
-void sha256(uint32_t *digest, const char *msg_proto, size_t msg_length_bytes){
-  for(int i=0; i<8; ++i)
-    digest[i] = reference_digest[i];
+void sha256(unsigned char *hash, const char *msg_proto, size_t msg_length_bytes){
+  uint32_t * digest = (uint32_t*)hash;
+  digest[0] = 0x6a09e667;
+  digest[1] = 0xbb67ae85;
+  digest[2] = 0x3c6ef372;
+  digest[3] = 0xa54ff53a;
+  digest[4] = 0x510e527f;
+  digest[5] = 0x9b05688c;
+  digest[6] = 0x1f83d9ab;
+  digest[7] = 0x5be0cd19;
 
   uint32_t L = msg_length_bytes*8; // begin with the original message of length L bits
   uint32_t buffer_size = 64*((L+65)/512+1); // Magic calculations derived from the K equation
@@ -107,3 +119,5 @@ void sha256(uint32_t *digest, const char *msg_proto, size_t msg_length_bytes){
 #define COUNT_PARMS2(_1, _2, _3, _, ...) _
 #define COUNT_PARMS(...) COUNT_PARMS2(__VA_ARGS__, , _inline, 1)
 #define sha256(...) CAT(sha256, COUNT_PARMS(__VA_ARGS__))(__VA_ARGS__)
+
+#endif
