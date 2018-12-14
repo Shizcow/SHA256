@@ -18,23 +18,23 @@ unsigned char* __mgf1(const unsigned char* input, size_t input_size, size_t leng
   return output;
 }
 
-void mgf1(unsigned char* rop, const unsigned char* input, size_t input_size, size_t length/*=strlen(input)*/){ // perform mgf and copy into rop
+void mgf1(unsigned char* rop, const unsigned char* input, size_t input_size/*=strlen(input)*/, size_t length){ // perform mgf and copy into rop
   unsigned char *output = __mgf1(input, input_size, length);
   memcpy(rop, output, length);
   free(output);
 }
-inline void mgf1_string(unsigned char* rop, const char* input){
-  mgf1(rop, (const unsigned char*)input, input_size, strlen(input));
+inline void mgf1_string(unsigned char* rop, const char* input, size_t length){
+  mgf1(rop, (const unsigned char*)input, strlen(input), length);
 }
 
-void mgf1_xor(unsigned char* rop, const unsigned char* input, size_t input_size, size_t length/*=strlen(input)*/){ // perform mfg1 and xor instead of memcpy into rop
+void mgf1_xor(unsigned char* rop, const unsigned char* input, size_t input_size/*=strlen(input)*/, size_t length){ // perform mfg1 and xor instead of memcpy into rop
   unsigned char *output = __mgf1(input, input_size, length);
   for(size_t i=0; i<length; ++i)
     rop[i]^=output[i];
   free(output);
 }
-inline void mgf1_xor_string(unsigned char* rop, const char* input){
-  mgf1_xor(rop, (const unsigned char*)input, input_size, strlen(input));
+inline void mgf1_xor_string(unsigned char* rop, const char* input, size_t length){
+  mgf1_xor(rop, (const unsigned char*)input, strlen(input), length);
 }
 
 
