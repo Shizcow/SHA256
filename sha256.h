@@ -30,7 +30,7 @@ const uint32_t k[64] = {0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c2
 			0x5b9cca4f, 0x682e6ff3, 0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208,
 			0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2};
 
-void sha256(unsigned char *hash, const char *msg_proto, size_t msg_length_bytes){
+void sha256(unsigned char *hash, const unsigned char *msg_proto, size_t msg_length_bytes/*=strlen(msg_proto)*/){
   uint32_t * digest = (uint32_t*)hash;
   digest[0] = 0x6a09e667;
   digest[1] = 0xbb67ae85;
@@ -111,13 +111,20 @@ void sha256(unsigned char *hash, const char *msg_proto, size_t msg_length_bytes)
   }
   free(msg);
 }
+inline void sha256_string(unsigned char *hash, const char *msg_proto){
+  sha256(hash, (const unsigned char*)msg_proto, strlen(msg_proto));
+}
 
-#define sha256_inline(digest, msg_proto) sha256(digest, msg_proto, strlen(msg_proto))
+#ifndef SHIZ_CAT
+#define SHIZC_CAT(A, B) SHIZC_CAT2(A, B)
+#endif
 
-#define CAT(A, B) CAT2(A, B)
-#define CAT2(A, B) A ## B
-#define COUNT_PARMS2(_1, _2, _3, _, ...) _
-#define COUNT_PARMS(...) COUNT_PARMS2(__VA_ARGS__, , _inline, 1)
-#define sha256(...) CAT(sha256, COUNT_PARMS(__VA_ARGS__))(__VA_ARGS__)
+#ifndef SHIZC_CAT2
+#define SHIZC_CAT2(A, B) A ## B
+#endif
+
+#define SHA256_SHIZC_COUNT_PARMS2(_1, _2, _3, _, ...) _
+#define SHA256_SHIZC_COUNT_PARMS(...) SHA256_SHIZC_COUNT_PARMS2(__VA_ARGS__, , _string, 1)
+#define sha256(...) SHIZC_CAT(sha256, SHA256_SHIZC_COUNT_PARMS(__VA_ARGS__))(__VA_ARGS__)
 
 #endif
