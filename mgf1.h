@@ -1,3 +1,6 @@
+#ifndef SHIZC_MGF
+#define SHIZC_MGF
+
 #include "sha256.h"
 #include <string.h>
 
@@ -50,3 +53,5 @@ inline void mgf1_xor_string(unsigned char* rop, const char* input){
 #define MGF1_XOR_SHIZC_COUNT_PARMS2(_1, _2, _3, _4, _, ...) _
 #define MGF1_XOR_SHIZC_COUNT_PARMS(...) MGF1_XOR_SHIZC_COUNT_PARMS2(__VA_ARGS__, , _string, 2, 1)
 #define mgf1_xor(...) SHIZC_CAT(mgf1_xor, MGF1_XOR_SHIZC_COUNT_PARMS(__VA_ARGS__))(__VA_ARGS__)
+
+#endif
