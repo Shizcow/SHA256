@@ -20,7 +20,7 @@ void mgf1(unsigned char* rop, const unsigned char* input, size_t input_size, siz
   memcpy(rop, output, length);
   free(output);
 }
-inline void mgf1_string(unsigned char* rop, const char* input, size_t input_size){
+inline void mgf1_string(unsigned char* rop, const char* input){
   mgf1(rop, (const unsigned char*)input, input_size, strlen(input));
 }
 
@@ -30,7 +30,7 @@ void mgf1_xor(unsigned char* rop, const unsigned char* input, size_t input_size,
     rop[i]^=output[i];
   free(output);
 }
-inline void mgf1_xor_string(unsigned char* rop, const char* input, size_t input_size){
+inline void mgf1_xor_string(unsigned char* rop, const char* input){
   mgf1_xor(rop, (const unsigned char*)input, input_size, strlen(input));
 }
 
